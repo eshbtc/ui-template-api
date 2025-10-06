@@ -33,8 +33,8 @@ COPY --from=builder /app/dist ./dist
 # Copy templates
 COPY src/templates ./dist/templates
 
-# Copy public assets (if any)
-COPY public ./public
+# Create public directory (for future use)
+RUN mkdir -p ./public
 
 # Expose port (Railway will set PORT env var)
 EXPOSE 3000
