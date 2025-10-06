@@ -1,0 +1,200 @@
+import Header, { HeaderIcon } from '@/components/Header';
+import ThemeScroller from '@/components/ThemeScroller';
+import React from 'react';
+import CustomCard from '@/components/CustomCard';
+import { View, Text, Pressable, ImageBackground } from 'react-native';
+import Icon from '@/components/Icon';
+import Section from '@/components/layout/Section';
+import { CardScroller } from '@/components/CardScroller';
+import Card from '@/components/Card';
+import { Button } from '@/components/Button';
+import ThemedText from '@/components/ThemedText';
+import Grid from '@/components/layout/Grid';
+import AnimatedView from '@/components/AnimatedView';
+import Avatar from '@/components/Avatar';
+import { Chip } from '@/components/Chip';
+import { Link, router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const products = [
+    {
+        id: 1,
+        title: 'Premium Cotton T-Shirt',
+        description: 'High-quality cotton t-shirt with a comfortable fit. Perfect for everyday wear.',
+        price: '$29.99',
+        rating: 4.8,
+        image: require('@/assets/img/male.jpg'),
+        badge: 'New',
+    },
+    {
+        id: 2,
+        title: 'Classic Denim Jeans',
+        description: 'Classic fit denim jeans with premium quality fabric.',
+        price: '$59.99',
+        rating: 4.6,
+        image: require('@/assets/img/female-2.jpg'),
+        badge: 'Sale',
+    },
+    {
+        id: 3,
+        title: 'Leather Sneakers',
+        description: 'Stylish leather sneakers with cushioned sole.',
+        price: '$89.99',
+        rating: 4.9,
+        image: require('@/assets/img/female-1.jpg'),
+    },
+    {
+        id: 4,
+        title: 'Wool Sweater',
+        description: 'Warm and cozy wool sweater for cold days.',
+        price: '$79.99',
+        rating: 4.7,
+        image: require('@/assets/img/male-2.jpg'),
+    },
+
+];
+
+
+export default function HomeScreen() {
+    const rightComponents = [
+        //<HeaderIcon hasBadge icon="MessageCircle" href="/screens/chat/list" />,
+        <HeaderIcon hasBadge icon="Bell" href="/screens/notifications" />,
+        <Avatar link="/screens/profile" size="xxs" className='mb-1 ml-1' src={require('@/assets/img/thomino.jpg')} />
+    ];
+
+    return (
+        <>
+
+            <Header
+                variant='blurred'
+                leftComponent={<ThemedText className='text-2xl font-outfit-bold'>Velora<Text className='text-teal-300'>.</Text>  </ThemedText>}
+                rightComponents={rightComponents}
+            //variant='transparent'
+            />
+
+            <ThemeScroller
+                scrollEventThrottle={16}
+                className='p-0'
+                style={{ paddingTop: 100 }}
+            >
+                <View className='flex-1'>
+                    <CustomCard
+                        backgroundImage={require('@/assets/img/banner-2.jpg')}
+                        className='w-full'
+                        rounded='none'
+                        overlayOpacity={0}
+                        href="/screens/products"
+                    >
+                        <View className="p-6 w-full h-[350px] flex flex-col justify-end">
+                            <View className="flex-row items-center justify-between">
+                                <View>
+                                    <Text className="text-white text-2xl font-bold">Summer 2025</Text>
+                                    <Text className="text-white text-xs mb-3">New collection just arrived</Text>
+                                </View>
+                            </View>
+                            <View className='flex-row items-center justify-start bg-white rounded-full mr-auto py-1 px-4 mt-2'>
+                                <Text className="text-sm text-black">
+                                    View all
+                                </Text>
+                            </View>
+
+                        </View>
+                    </CustomCard>
+
+                    <CardScroller space={0} className='mt-0'>
+                        <FeaturedProduct
+                            title="Night dress"
+                            price="$29.99"
+                            image={require('@/assets/img/female-1.jpg')}
+                        />
+                        <FeaturedProduct
+                            title="Summer jacket"
+                            price="$29.99"
+                            image={require('@/assets/img/female-2.jpg')}
+                        />
+                        <FeaturedProduct
+                            title="Casual jacket"
+                            price="$29.99"
+                            image={require('@/assets/img/male-2.jpg')}
+                        />
+
+                    </CardScroller>
+
+
+                    <CardScroller className='mt-3 px-global' space={6}>
+                        <Chip onPress={() => router.push('/screens/products')} label="Women" />
+                        <Chip onPress={() => router.push('/screens/products')} label="Men" />
+                        <Chip onPress={() => router.push('/screens/products')} label="Kids" />
+                        <Chip onPress={() => router.push('/screens/products')} label="Accessories" />
+                        <Chip onPress={() => router.push('/screens/products')} label="Jewelry" />
+                        <Chip onPress={() => router.push('/screens/products')} label="Sale" />
+                    </CardScroller>
+
+                    <Section
+                        //title="All Products"
+                        className='mt-4 px-2'
+                        titleSize='lg'
+                    //padding="md"
+                    >
+                        <Grid className='mt-2' columns={2} spacing={5} >
+                            {products.map((product) => (
+                                <Card
+                                    imageHeight={250}
+                                    key={product.id}
+                                    rounded='none'
+                                    title={product.title}
+                                    //description={product.description}
+                                    image={product.image}
+                                    price={product.price}
+                                    //rating={product.rating}
+                                    badge={product.badge}
+                                    //badgeColor={product.badgeColor}
+                                    href={`/screens/product-detail?id=${product.id}`}
+                                //variant='overlay'
+                                />
+                            ))}
+                        </Grid>
+                    </Section>
+
+                </View>
+                <View className='h-[50px]' />
+            </ThemeScroller>
+        </>
+    );
+}
+
+
+const CategorySelect = (props: any) => {
+    return (
+        <Pressable className='flex-col flex items-center justify-center'>
+            <View className='w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center'>
+                <Icon name={props.icon} strokeWidth={1.4} size={24} />
+            </View>
+            <ThemedText className="text-xs">{props.title}</ThemedText>
+        </Pressable>
+    )
+}
+
+
+const FeaturedProduct = (props: any) => {
+    return (
+        <Link href="/screens/product-detail" asChild>
+            <Pressable className='w-[300px] h-[400px]'>
+                <ImageBackground
+                    source={props.image}
+                    className='w-full h-full'>
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.3)']}
+                        className='w-full h-full'
+                    >
+                        <View className='flex-1 items-start justify-end p-4'>
+                            <Text className='text-white text-base font-bold'>{props.title}</Text>
+                            <Text className='text-white text-xs mb-3'>{props.price}</Text>
+                        </View>
+                    </LinearGradient>
+                </ImageBackground>
+            </Pressable>
+        </Link>
+    )
+}

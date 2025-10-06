@@ -30,16 +30,46 @@ async function getTemplateMeta(templateId: string): Promise<TemplateMeta | null>
       const metaContent = await fs.readFile(metaPath, 'utf-8');
       return JSON.parse(metaContent);
     } catch {
+      // Detect template type by checking for key files
+      let isReactNative = false;
+      let stack = 'next+tailwind+shadcn+magicui';
+      let author = 'MagicUI Design';
+
+      try {
+        const packagePath = path.join(templatePath, 'package.json');
+        const packageContent = await fs.readFile(packagePath, 'utf-8');
+        const packageJson = JSON.parse(packageContent);
+
+        // Check for React Native / Expo
+        if (packageJson.dependencies?.expo || packageJson.dependencies?.['react-native']) {
+          isReactNative = true;
+          stack = 'react-native+expo+nativewind';
+          author = packageJson.name || 'React Native Community';
+        }
+      } catch {
+        // Fallback to filename-based detection
+      }
+
       // Generate basic meta from directory
       const isPortfolio = templateId.includes('portfolio');
       const isStartup = templateId.includes('startup');
       const isSaas = templateId.includes('saas');
       const isAgent = templateId.includes('agent');
       const isDevtool = templateId.includes('devtool');
-      const isMobile = templateId.includes('mobile');
+      const isMobile = templateId.includes('mobile') || isReactNative;
 
       let capabilities: string[] = [];
-      if (isPortfolio) capabilities = ['landing', 'portfolio', 'blog'];
+      if (isReactNative) {
+        // React Native specific capabilities
+        capabilities = ['mobile-app', 'cross-platform', 'native'];
+        if (templateId === 'luna') capabilities.push('fitness', 'health');
+        else if (templateId === 'multia') capabilities.push('social', 'media');
+        else if (templateId === 'feedy') capabilities.push('feed', 'social');
+        else if (templateId === 'velora') capabilities.push('ecommerce', 'shopping');
+        else if (templateId === 'propia') capabilities.push('real-estate', 'listings');
+        else if (templateId === 'caloria-v2') capabilities.push('health', 'nutrition');
+        else if (templateId === 'walley') capabilities.push('finance', 'wallet');
+      } else if (isPortfolio) capabilities = ['landing', 'portfolio', 'blog'];
       else if (isStartup) capabilities = ['landing', 'marketing'];
       else if (isSaas) capabilities = ['landing', 'dashboard', 'auth'];
       else if (isAgent) capabilities = ['landing', 'ai-agent', 'chat'];
@@ -47,13 +77,17 @@ async function getTemplateMeta(templateId: string): Promise<TemplateMeta | null>
       else if (isMobile) capabilities = ['landing', 'mobile-first', 'pwa'];
       else capabilities = ['landing'];
 
+      const description = isReactNative
+        ? `${capabilities.join(' + ')} mobile app built with React Native, Expo, and NativeWind`
+        : `${capabilities.join(' + ')} template built with Next.js, shadcn/ui, and MagicUI`;
+
       return {
         id: templateId,
         name: templateId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-        description: `${capabilities.join(' + ')} template built with Next.js, shadcn/ui, and MagicUI`,
-        stack: 'next+tailwind+shadcn+magicui',
+        description,
+        stack,
         capabilities,
-        author: templateId.startsWith('dillionverma') ? 'Dillion Verma' : 'MagicUI Design',
+        author: templateId.startsWith('dillionverma') ? 'Dillion Verma' : author,
         preview_url: `https://ui-template-api-production.up.railway.app/screenshots/${templateId}-preview.png`
       };
     }
